@@ -37,7 +37,7 @@ r_nivel1 = 500000;
 eps_nivel1 = 0.05;
 
 % Realizaciones objetivo Nivel II
-r_nivel2 = 100000;
+r_nivel2 = 50000;
 
 sistema_prueba = 'case24_ieee_rts_1';
 
@@ -177,7 +177,7 @@ tiempo_nivel1 = toc(tStart);
 
 case_name_nivel2 = sprintf('N2_Base_%s_d%d_k%s', periodo_str, p_max, k_str);
 
-[E_DNS_n2, des_DNS_n2, LOLP_n2, cont_mcs_n2, T_resultados] = ...
+[E_DNS_n2, des_DNS_n2, LOLP_n2, error_DNS_n2, cont_mcs_n2, T_resultados] = ...
     SMC_Nivel2_Muestreo(sistema_prueba, gen_FNCER, ...
     Pr_Falla_Gen, Pr_Falla_LT, typeFERNC, Sn_FERNC, CM, VA, Co_FERNC, ...
     r_nivel2, LD, dn, T_escenarios, cluster_stats, ...

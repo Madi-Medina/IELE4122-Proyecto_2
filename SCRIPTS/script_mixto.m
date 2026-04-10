@@ -22,14 +22,14 @@ tStart = tic;
 % Demanda pico del sistema [MW]: 3300
 p_max = 3300;
 
-% Período de análisis: 1 = día
+% Período de análisis: 1 = día; 0 = noche
 dn = 1;
 
 % Configuración de tecnologías: 1, 2 o 3
 %   1: Eólica Norte + Solar Sur  
 %   2: Solar Norte + Eólica Sur  
 %   3: Mixta en ambas zonas      
-config = 2;
+config = 1;
 
 % Número de clusters: 0 = automático, o manual (3, 15, ...)
 num_clusters = 0;
@@ -261,7 +261,7 @@ tiempo_nivel1 = toc(tStart);
 
 case_name_nivel2 = sprintf('N2_Mixto_%s_d%d_f%d_%s_k%s', periodo_str, p_max, factor_cap, config_name, k_str);
 
-[E_DNS_n2, des_DNS_n2, LOLP_n2, cont_mcs_n2, T_resultados] = ...
+[E_DNS_n2, des_DNS_n2, LOLP_n2, error_DNS_n2, cont_mcs_n2, T_resultados] = ...
     SMC_Nivel2_Muestreo(sistema_prueba, gen_FNCER, ...
     Pr_Falla_Gen, Pr_Falla_LT, typeFERNC, Sn_FERNC, CM, VA, Co_FERNC, ...
     r_nivel2, LD, dn, T_escenarios, cluster_stats, ...
@@ -275,6 +275,6 @@ tiempo_total = toc(tStart);
 fprintf('\nRESUMEN DEL SCRIPT\n');
 fprintf('  Config %d: %s\n', config, config_name);
 fprintf('  Nivel I:  E[DNS] = %.4f MW, Error = %.2f%%\n', E_DNS_n1, error_DNS_n1*100);
-fprintf('  Nivel II: E[DNS] = %.4f MW\n', E_DNS_n2);
+fprintf('  Nivel II: E[DNS] = %.4f MW, Error = %.2f%%\n', E_DNS_n2, error_DNS_n2*100);
 fprintf('  Tiempos:  Nivel I = %.2f min | Nivel II = %.2f min | Total = %.2f min\n', ...
     tiempo_nivel1/60, tiempo_nivel2/60, tiempo_total/60);
