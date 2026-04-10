@@ -92,10 +92,13 @@ function [MC_dia_noche, Sn_FNCER, a_dia, b_dia] = Generacion_solar(data, Sn, Sn_
     curtosis_dia = kurtosis(p_dia); % Curtosis para el día        
       
     % Consolidación de resultados en tabla
-    Media   = [media_dia(:);   0];
-    DesvE   = [des_dia(:);     0];
+    % Workaround: noche=eps en lugar de 0 evita un error de dimensión
+    % en SMC_Nivel2_Muestreo cuando se mezclan tecnologías con/sin variabilidad nocturna.
+    eps_noche = 1e-9;
+    Media   = [media_dia(:);   eps_noche];
+    DesvE   = [des_dia(:);     eps_noche];
     Sesgo   = [sesgo_dia(:);   0];
-    Curtosis= [curtosis_dia(:); 0];
+    Curtosis= [curtosis_dia(:); 3];
     
     Periodo = ["Día"; "Noche"];
     

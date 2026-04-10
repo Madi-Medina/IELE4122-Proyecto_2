@@ -450,7 +450,12 @@ while cont_mcs < r && error_DNS >= eps
                 cache_struct.(key_safe) = DNS_weighted;
             end
         end
-        
+
+        % Filtrar ruido numérico del PEM (consistente con Nivel 2 línea 480)
+        if DNS_weighted < 0.01
+            DNS_weighted = 0;
+        end
+
         batch_DNS(b) = DNS_weighted;
     end
     

@@ -278,6 +278,13 @@ elseif dn == 0 % período nocturno
 
     if isempty(typeFERNC) == 0 % Verificar que existan fuentes renovables a procesar
     
+        % Guardar info original antes de eliminar solares
+        typeFERNC_original = typeFERNC;
+        m_original = length(typeFERNC);
+        Sn_FERNC_original = Sn_FERNC;
+        idx_solar = find(typeFERNC == 2);
+        idx_eolica = find(typeFERNC == 1);
+
         % Extracción de momentos centrales de la matriz CM  
         
         mean_FERNC = CM(1,:)'; % vector con la media de cada fuente [MW]
@@ -471,7 +478,7 @@ elseif dn == 0 % período nocturno
         
                     end
                     
-                    if k ~= 3
+                    if k ~= 1
         
                         e(i,k) = (skew_q(i,1)/2) + ((-1)^(3-k))*sqrt(kurt_q(i,1)-((3/4)*(skew_q(i,1))^2));
         
@@ -540,7 +547,7 @@ elseif dn == 0 % período nocturno
                        
         % Construcción de la matriz con los puntos de concentración (desagregada)
         % Estructura: [número_punto | potencia_fuente_1 ... potencia_fuente_m | peso]             
-        pc = zeros(2*length(Sn_FERNC) + 1, 2+length(Sn_FERNC)); %
+        pc = zeros(2*length(Sn_FERNC) + 1, 2+length(Sn_FERNC));
         pc(1,end) = sum(w(:,end));
         
         for i = 1:2*length(Sn_FERNC) + 1
@@ -553,6 +560,34 @@ elseif dn == 0 % período nocturno
             pc(2*i:2*i+1,end) = w(i,1:2)';
         end
     
+    end
+    
+    % Reconstrucción: devolver pc, p, w con m_original fuentes (caso mixto nocturno)
+    % Cuando hay fuentes solares eliminadas, pc tiene menos columnas de las
+    % que espera SMC_Nivel2_Muestreo. Se reconstruye con m_original fuentes,
+    % insertando ceros en las posiciones de las fuentes solares.
+    if exist('idx_solar','var') && ~isempty(idx_solar) && exist('p','var')
+        p_full = zeros(m_original, 3);
+        w_full = zeros(m_original, 3);
+        for j = 1:length(idx_eolica)
+            p_full(idx_eolica(j), :) = p(j, :);
+            w_full(idx_eolica(j), :) = w(j, :);
+        end
+        p = p_full;
+        w = w_full;
+        Sn_FERNC = Sn_FERNC_original;
+        pc = zeros(2*m_original + 1, 2 + m_original);
+        pc(1, end) = sum(w(:, end));
+        for i = 1:2*m_original + 1
+            pc(i, 1) = i;
+            pc(i, 2:m_original+1) = p(:, 3)';
+        end
+        for i = 1:m_original
+            if any(idx_eolica == i)
+                pc(2*i:2*i+1, 1+i) = p(i, 1:2)';
+                pc(2*i:2*i+1, end) = w(i, 1:2)';
+            end
+        end
     end
 
 end
